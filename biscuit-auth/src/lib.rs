@@ -221,6 +221,7 @@
 
 mod crypto;
 pub mod datalog;
+mod elixir;
 pub mod error;
 pub mod format;
 pub mod parser;
