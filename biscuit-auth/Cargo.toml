@@ -1,5 +1,5 @@
 [package]
-name = "biscuit-auth"
+name = "biscuit_auth"
 version = "4.1.1"
 description = "an authorization token with decentralized verification and offline attenuation"
 authors = ["Geoffroy Couprie <contact@geoffroycouprie.com>"]
@@ -9,6 +9,10 @@ license = "Apache-2.0"
 documentation = "https://docs.rs/biscuit-auth"
 homepage = "https://github.com/biscuit-auth/biscuit"
 repository = "https://github.com/biscuit-auth/biscuit-rust"
+
+[lib]
+name = "biscuit_auth"
+crate-type = ["cdylib"]
 
 [features]
 default = ["regex-full", "datalog-macro"]
