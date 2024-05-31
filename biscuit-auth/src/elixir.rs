@@ -63,4 +63,12 @@ fn authorize(biscuit: String, public_key: String, authorizer_code: String) -> bo
     authorizer.authorize().is_ok()
 }
 
-rustler::init!("Elixir.Biscuit", [new_private_key, generate, authorize]);
+rustler::init!(
+    "Elixir.Biscuit",
+    [
+        new_private_key,
+        generate,
+        authorize,
+        public_key_from_private
+    ]
+);
