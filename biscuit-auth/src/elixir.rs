@@ -85,14 +85,16 @@ fn get_user_id(biscuit: String, public_key: String) -> i64 {
 }
 
 #[rustler::nif]
-fn authorize(biscuit: String, public_key: String, authorizer_code: String) -> bool {
-    let public_key = PublicKey::from_bytes_hex(&public_key).unwrap();
-    // This does verification for us as well, nice :)
-    let biscuit = Biscuit::from(biscuit, public_key).unwrap();
+fn authorize(biscuit: String, public_key: String, authorizer_code: String) -> Result<(), String> {
+    let public_key = PublicKey::from_bytes_hex(&public_key).map_err(|e| e.to_string())?;
+    let biscuit = Biscuit::from_base64(biscuit, public_key).unwrap();
     let mut authorizer = Authorizer::new();
-    authorizer.add_code(authorizer_code).unwrap();
-    authorizer.add_token(&biscuit).unwrap();
-    authorizer.authorize().is_ok()
+    authorizer
+        .add_code(authorizer_code)
+        .map_err(|e| e.to_string())?;
+    authorizer.add_token(&biscuit).map_err(|e| e.to_string())?;
+    authorizer.authorize().map_err(|e| e.to_string())?;
+    Ok(())
 }
 
 #[rustler::nif]
