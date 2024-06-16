@@ -54,12 +54,15 @@ fn generate(private_key: String, facts: Vec<(String, String, Vec<String>)>) -> S
 }
 
 #[rustler::nif]
-fn get_user_id(biscuit: String, public_key: String) -> i64 {
-    let public_key = PublicKey::from_bytes_hex(&public_key).unwrap();
-    let biscuit = Biscuit::from_base64(biscuit, public_key).unwrap();
+fn get_user_id(biscuit: String, public_key: String) -> Result<i64, String> {
+    let public_key = PublicKey::from_bytes_hex(&public_key).map_err(|e| e.to_string())?;
+    let biscuit = Biscuit::from_base64(biscuit, public_key).map_err(|e| e.to_string())?;
 
     let mut authorizer = Authorizer::new();
-    authorizer.add_token(&biscuit).unwrap();
+    authorizer
+        .add_token(&biscuit)
+        .map_err(|e| e.to_string())
+        .map_err(|e| e.to_string())?;
     authorizer
         .add_code(
             r#"
@@ -69,7 +72,7 @@ fn get_user_id(biscuit: String, public_key: String) -> i64 {
         deny if false;
         "#,
         )
-        .unwrap();
+        .map_err(|e| e.to_string())?;
 
     let user_info: Vec<(String,)> = authorizer
         .query_with_limits(
@@ -79,9 +82,10 @@ fn get_user_id(biscuit: String, public_key: String) -> i64 {
                 ..Default::default()
             },
         )
-        .unwrap();
+        .map_err(|e| e.to_string())?;
 
-    user_info.first().unwrap().0.parse().unwrap()
+    let user_id: &str = &user_info.first().unwrap().0;
+    Ok(user_id.parse().unwrap())
 }
 
 #[rustler::nif]
